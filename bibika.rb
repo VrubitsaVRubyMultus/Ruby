@@ -109,7 +109,13 @@ class Track < Car
   end
   def watch
   	@items.flatten
+  	puts "#{items}"
   end
 end
-class item
+class Item
+  attr_accessor :weight
+
+  def initialize (weight)
+    @weight = weight
+  end
 end
