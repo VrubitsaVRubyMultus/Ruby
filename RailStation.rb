@@ -1,13 +1,22 @@
 module Creator
   attr_accessor :name
 end
+class NameError < Exception
+end
+class NumberError < Exception
+end
+class SpeedError < Exception
+end
+class UnworkError < Exception
+end
 class Train
+  attr_accessor :number
   include Creator
   @@all = {}
   def self.find(number)
     @@all[number]
   end
-  def initialize(number, type, vag, fuel, rout, work = :work, status = :no)
+  def initialize(number, type, vag, fuel, rout, num, work = :work, status = :no)
     @vag = vag
     @vag = []
     @number = number
@@ -31,12 +40,23 @@ class Train
     @preveus = now -= 1
     @@all = all
     @@all[number] = self
+    @num = num
+    if num != number
+      validate!
+      @num = number
+    end
     if status == :no
          @speed = 0
     end
     if speed == 0
          @status = :no
     end
+    validate!
+  end
+  def validate!
+    fail NameError, "gde nomer?!" if number.nil || number.empty
+    fail NameError, "nevernaya dlina nomera" if number.size = 9
+    true
   end
   def now
      puts "#{now}"
@@ -51,14 +71,14 @@ class Train
      if speed >= 100
       @now += 1
      else
-         puts "razgonis"
+         fail SpeedError, "razgonis"
      end
   end
   def get_preveus 
        if speed >= 100
       @now -= 1
      else
-         puts "razgonis"
+         fail SpeedError, "razgonis"
      end
   end
    def uskoreniye
@@ -66,7 +86,7 @@ class Train
        @fuel -= 1
        puts "speed = #{@speed}"
        if @speed == 110
-           puts "uspokoysya durak!"
+           fail SpeedError, "uspokoysya durak!"
        elsif @speed >= 110
            puts "BOOOOM!!!"
            @speed = 0
@@ -131,19 +151,31 @@ class Train
 end
 
 class RailStation
+  attr_accessor :name
   @@all = []
-  def initialize (name, trains, object)
+  def initialize (name, num, trains, object)
     @name = name
     @trains = trains
     @object = object
     @object = []
     @@all << name
+    validate!
+    @num = num
+    if num != name
+      validate!
+      @num = name
+    end
+  end
+  def validate!
+    fail NameError, "gde nomer?!" if name.nil || name.empty
+    fail NameError, "nevernaya dlina nomera" if name.size = 3
+    true
   end
   def self.all
     puts all
   end
   def trains
-    puts "sdes #{trains} poezdov"
+     "sdes #{trains} poezdov"
     @object.each { |trains| puts "sdes poezda nomer: #{object.number}"}
   end
 
@@ -157,7 +189,7 @@ class RailStation
       @trains -= 1
       @object.delete(train)
     else
-      puts "net poezdov"
+      fail NumberError, "net poezdov"
     end
   end
 end
@@ -196,7 +228,7 @@ class Cargotrain < Train
       elsif @speed > 0
         puts "ostanovis"
       elsif @work == :unwork
-        puts "nuzhna pochinka"
+        fail UnworkError, "nuzhna pochinka"
       end
    end
    def vagon_minus (cargovagon)
@@ -248,8 +280,9 @@ class Passengertrain < Train
    end
 end
 class Vagon
+   attr_accessor :number
    include Creator
-   def initialize (place, number, fullnes, status = :empty)
+   def initialize (place, number, fullnes, num, status = :empty)
        @place = place
        @number = number
        @place = 1000
@@ -264,7 +297,18 @@ class Vagon
        else
            @status = :some
        end
+       @num = num
+         if num != number
+           validate!
+           @num = number
+         end
+       validate!
    end
+   def validate!
+    fail NameError, "gde nomer?!" if number.nil || number.empty
+    fail NameError, "nevernaya dlina nomera" if number.size = 9
+    true
+  end
 end
 class Item
   include Creator
@@ -311,82 +355,15 @@ class Passengervagon < Vagon
        end
    end
 end
-# class Terminall
-#   def initialize (trains, stations, routs, vagons)
-#     @trains = []
-#     @trains = trains
-#     @stations = stations
-#     @stations = []
-#     @routs = routs
-#     @routs = []
-#     @vagons = vagons
-#     @vagons = []
-#   end
-#   def main (answer, answer2, answer3)
-#       if answer == 1
-#         self.create_rout
-#       elsif answer == 2
-#         self.create_train
-#       elsif answer == 3
-#         self.create_station
-#       elsif answer == 4
-#         if answer2 == 1                
-#     end
-#   end
-#   private
-#   def create_rout
-#     @routs << Rout.new
-#     puts "marshroot #{routs}"
-#   end
-#   def create_train
-#     @trains << Train.new
-#   end
-#   def create_station
-#     @stations << Station.new
-#   end
-#   def add_vagon (vagon, train)
-#     if @speed == 0 && @work == :work
-#         @vag_size += 1
-#         @vag << vagon
-#         puts "vag = #{@vag}"
-#     elsif @speed > 0
-#         puts "ostanovis"
-#     elsif @work == :unwork
-#         puts "nuzhna pochinka"
-#     end
-#   end
-#   def remove_vagon
-#     if @vag_size >= 1 && @speed == 0 && @work == :work
-#       @vag_size -= 1
-#       @vag.delete vagon
-#           puts "vag = #{@vag}"
-#     elsif @speed > 0
-#         puts "ostanovis"
-#     elsif @work == :unwork
-#         puts "nuzhna pochinka"
-#     elsif @vag <= 1
-#         puts "ty ne posmeesh!"
-#     else
-#         puts "nepoladki"
-#       end
-#    end
-#    def set_train (train, station)
-#      @trains += 1
-#      @object << train
-#    end
-#    def send_train (train, station)
-#      if @trains >= 1
-#       @trains -= 1
-#       @object.delete(train)
-#      else
-#       puts "net poezdov"
-#      end
-#    end
-#    def put_items
-#      if status == :empty or :some
-#        @place -= 1
-#        @fullnes << Item
-#      else
-#        puts "net mesta"
-#        end
-#    end
+class Terminall
+  def initialize (trains, stations, routs, vagons)
+    @trains = []
+    @trains = trains
+    @stations = stations
+    @stations = []
+    @routs = routs
+    @routs = []
+    @vagons = vagons
+    @vagons = []
+  end
+
