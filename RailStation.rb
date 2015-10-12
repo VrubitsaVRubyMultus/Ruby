@@ -45,18 +45,17 @@ class Train
       validate!
       @num = number
     end
-    if status == :no
-         @speed = 0
-    end
-    if speed == 0
-         @status = :no
-    end
     validate!
   end
   def validate!
     fail NameError, "gde nomer?!" if number.nil || number.empty
     fail NameError, "nevernaya dlina nomera" if number.size = 9
     true
+  end
+  def custom
+    @vag.each do |v_a_g|
+      yield(v_a_g)
+    end
   end
   def now
      puts "#{now}"
@@ -103,6 +102,12 @@ class Train
    def zamedlenye
        @speed -= 10
        puts "speed = #{@speed}"
+       if status == :no
+         @speed = 0
+       end
+       if speed == 0
+         @status = :no
+    end
    end
    def speed
        puts "speed = #{@speed}"
@@ -170,6 +175,12 @@ class RailStation
     fail NameError, "gde nomer?!" if name.nil || name.empty
     fail NameError, "nevernaya dlina nomera" if name.size = 3
     true
+  end
+  def custom
+    @object.each do |obj|
+      yield(obj)
+    end
+  end
   end
   def self.all
     puts all
@@ -304,6 +315,7 @@ class Vagon
          end
        validate!
    end
+   private
    def validate!
     fail NameError, "gde nomer?!" if number.nil || number.empty
     fail NameError, "nevernaya dlina nomera" if number.size = 9
@@ -321,6 +333,13 @@ class Person
 end
 class Cargovagon < Vagon
    def put
+       if place == 0
+           @status = :full
+       elsif place == 1000
+           @status = :empty
+       else
+           @status = :some
+       end
        if status == :empty or status == :some
            @place -= 1
            @fullnes << item
@@ -329,6 +348,13 @@ class Cargovagon < Vagon
        end
    end
    def empty
+       if place == 0
+           @status = :full
+       elsif place == 1000
+           @status = :empty
+       else
+           @status = :some
+       end
        if status == :empty
            puts "net gruza"
        else
@@ -339,6 +365,13 @@ class Cargovagon < Vagon
 end
 class Passengervagon < Vagon
    def put
+       if place == 0
+           @status = :full
+       elsif place == 1000
+           @status = :empty
+       else
+           @status = :some
+       end
        if status == :empty or :some
            @place -= 1
            @fullnes << Person
@@ -347,6 +380,13 @@ class Passengervagon < Vagon
        end
    end
    def empty
+       if place == 0
+           @status = :full
+       elsif place == 1000
+           @status = :empty
+       else
+           @status = :some
+       end
        if status == :empty
            puts "net ludey"
        else
@@ -365,5 +405,17 @@ class Terminall
     @routs = []
     @vagons = vagons
     @vagons = []
+  end
+  def plus_vagon
+    @vagons << Vagon.new
+  end
+  def plus_rout
+    @routs << Rout.new
+  end
+  def plus_station
+    @stations << RailStation.new
+  end
+  def plus_train
+    @trains << Train.new
   end
 
